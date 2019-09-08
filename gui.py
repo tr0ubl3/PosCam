@@ -15,6 +15,7 @@ class Window(QtGui.QMainWindow):
         self.x_spacer = 250
         self.x_min = 10
         self.electrod = 100 #in microni
+        self.x_calibration = 100
 
     def home(self):
 
@@ -48,7 +49,7 @@ class Window(QtGui.QMainWindow):
         # afisare distanta intre liniile verticale
         painter.setPen(QtGui.QColor(125, 125, 125))
         painter.setFont(QtGui.QFont('Consolas', 30))
-        val_afisata = self.electrod #(self.rect().width() / 2 + self.x_move_1 + self.x_spacer) - (self.rect().width() / 2 + self.x_move - self.x_spacer)
+        val_afisata = (self.electrod * (self.x_move_1 - self.x_move + 2 * self.x_spacer)) / self.x_calibration #(self.rect().width() / 2 + self.x_move_1 + self.x_spacer) - (self.rect().width() / 2 + self.x_move - self.x_spacer)
         #print(lol)
         painter.drawText(50, 100, u'\u00D8' + ' ' + str(val_afisata) + ' ' + u'\u03BCm')
 
@@ -85,6 +86,7 @@ class Window(QtGui.QMainWindow):
             self.y_move = 0
             self.x_move_1 = 0
             self.y_move_2 = 0
+            self.x_calibration = 100
         if e.key() == QtCore.Qt.Key_C:
             self.showDialog()
         self.update()
@@ -93,6 +95,7 @@ class Window(QtGui.QMainWindow):
         text, result = QtGui.QInputDialog.getText(self, 'Calibrare camera ', 'Introdu diametrul electrodului:')
         if result == True:
             self.electrod = int(text)
+            self.x_calibration = self.x_move_1 - self.x_move + 2 * self.x_spacer
     
 
     def close_application(self):
