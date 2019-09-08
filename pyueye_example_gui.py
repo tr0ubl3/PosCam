@@ -68,11 +68,12 @@ class PyuEyeQtView(QtGui.QWidget):
         self.v_layout.addWidget(self.graphics_view)
 
         self.scene.drawBackground = self.draw_background
+        self.scene.drawForeground = self.draw_foreground
         self.scene.setSceneRect(self.scene.itemsBoundingRect())
         self.update_signal.connect(self.update_image)
 
-        self.processors = [4]
-        self.resize(752, 480)
+        self.processors = []
+        self.resize(800, 580)
 
         self.v_layout.addLayout(self.h_layout)
         self.setLayout(self.v_layout)
@@ -90,10 +91,25 @@ class PyuEyeQtView(QtGui.QWidget):
         if self.image:
             image = self.image.scaled(rect.width(), rect.height(), QtCore.Qt.KeepAspectRatioByExpanding)
             painter.drawImage(rect.x(), rect.y(), image)
+            
+    def draw_foreground(self, painter, rect)
+        color = QtGui.QColor(255, 0, 0)
+        pen = QtGui.QPen(color, 3)
+        pen.setStyle(QtCore.Qt.DashDotLine)
+        painter.setPen(pen)
+        # linie orizontala
+        painter.drawLine(0, self.rect().height() / 2 + self.y_move, self.rect().width(), self.rect().height() / 2 + self.y_move)
+        
+        # linie verticala
+        color = QtGui.QColor(0, 0, 255)
+        pen = QtGui.QPen(color, 3)
+        pen.setStyle(QtCore.Qt.DashDotLine)
+        painter.setPen(pen)
+        painter.drawLine(self.rect().width() / 2 + self.x_move, 0, self.rect().width() / 2 + self.x_move, self.rect().height())
+        
 
     def update_image(self, image):
         self.scene.update()
-
 
     def user_callback(self, image_data):
         return image_data

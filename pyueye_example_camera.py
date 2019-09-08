@@ -73,7 +73,6 @@ class Camera:
         if ret != ueye.IS_SUCCESS:
             self.h_cam = None
             raise uEyeException(ret)
-
         return ret
 
     def exit(self):

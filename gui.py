@@ -50,7 +50,7 @@ class Window(QtGui.QMainWindow):
 
 
     def close_application(self):
-        print("custom")
+        #print("custom")
         sys.exit()
 
 def run():
