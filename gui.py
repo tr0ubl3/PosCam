@@ -1,5 +1,6 @@
 import sys
 from PyQt4 import QtGui, QtCore
+import math
 
 class Window(QtGui.QMainWindow):
     def __init__(self):
@@ -16,6 +17,7 @@ class Window(QtGui.QMainWindow):
         self.x_min = 10
         self.electrod = 100 #in microni
         self.x_calibration = 100
+        self.increment = 1800.0
 
     def home(self):
 
@@ -52,7 +54,11 @@ class Window(QtGui.QMainWindow):
         val_afisata = (self.electrod * (self.x_move_1 - self.x_move + 2 * self.x_spacer)) / self.x_calibration #(self.rect().width() / 2 + self.x_move_1 + self.x_spacer) - (self.rect().width() / 2 + self.x_move - self.x_spacer)
         #print(lol)
         painter.drawText(50, 100, u'\u00D8' + ' ' + str(val_afisata) + ' ' + u'\u03BCm')
-
+        
+        # afisare calcul unghi
+        unghi_teta = math.degrees(math.atan(self.increment/val_afisata))
+        painter.drawText(50, 150, u'\u2221' + ' ' + str(round(90 - unghi_teta, 2)) + u'\u00B0' + ', increment de ' + str(self.increment/1000) + ' mm')
+        
     def keyPressEvent(self, e):
         k = e.key()
         m = int(e.modifiers())
@@ -88,15 +94,21 @@ class Window(QtGui.QMainWindow):
             self.y_move_2 = 0
             self.x_calibration = 100
         if e.key() == QtCore.Qt.Key_C:
-            self.showDialog()
+            self.showDialogCalibration()
+        if e.key() == QtCore.Qt.Key_I:
+            self.showDialogIncrement()
         self.update()
     
-    def showDialog(self):
+    def showDialogCalibration(self):
         text, result = QtGui.QInputDialog.getText(self, 'Calibrare camera ', 'Introdu diametrul electrodului:')
         if result == True:
             self.electrod = int(text)
             self.x_calibration = self.x_move_1 - self.x_move + 2 * self.x_spacer
-    
+            
+    def showDialogIncrement(self):
+        text, result = QtGui.QInputDialog.getText(self, 'Increment ', 'Introdu incrementul in mm:')
+        if result == True:
+            self.increment = float(text) * 1000
 
     def close_application(self):
         #print("custom")
