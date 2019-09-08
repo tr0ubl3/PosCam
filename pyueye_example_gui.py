@@ -128,12 +128,13 @@ class PyuEyeQtView(QtGui.QWidget):
         painter.setPen(QtGui.QColor(125, 125, 125))
         painter.setFont(QtGui.QFont('Consolas', 30))
         val_afisata = (self.electrod * (self.x_move_1 - self.x_move + 2 * self.x_spacer)) / self.x_calibration #(self.rect().width() / 2 + self.x_move_1 + self.x_spacer) - (self.rect().width() / 2 + self.x_move - self.x_spacer)
+        self.x_move_1 - self.x_move + 2 * self.x_spacer
         #print(lol)
         painter.drawText((-self.rect().width() / 2) + 30 , (-self.rect().height() / 2) + 50, u'\u00D8' + ' ' + str(val_afisata) + ' ' + u'\u03BCm')
 
         # afisare calcul unghi
         unghi_teta = math.degrees(math.atan(self.increment/(val_afisata / 2)))
-        inclinatie = 1000 / math.tan(math.radians(unghi_teta))
+        inclinatie = ((1000 * self.x_calibration)/self.electrod) / math.tan(math.radians(unghi_teta))
         painter.drawText((-self.rect().width() / 2) + 30, (-self.rect().height() / 2) + 100, str(round(inclinatie, 2)) + ' ' + u'\u03BCm' + '/mm')
 
     def update_image(self, image):
