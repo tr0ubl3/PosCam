@@ -91,22 +91,23 @@ class PyuEyeQtView(QtGui.QWidget):
         if self.image:
             image = self.image.scaled(rect.width(), rect.height(), QtCore.Qt.KeepAspectRatioByExpanding)
             painter.drawImage(rect.x(), rect.y(), image)
-            
-    def draw_foreground(self, painter, rect)
+
+    def draw_foreground(self, painter, rect):
         color = QtGui.QColor(255, 0, 0)
         pen = QtGui.QPen(color, 3)
-        pen.setStyle(QtCore.Qt.DashDotLine)
+        pen.setStyle(QtCore.Qt.DashLine)
         painter.setPen(pen)
         # linie orizontala
-        painter.drawLine(0, self.rect().height() / 2 + self.y_move, self.rect().width(), self.rect().height() / 2 + self.y_move)
-        
+        #print(self.rect().height() / 2 + self.y_move)
+        painter.drawLine(-self.rect().width(), 0 + self.y_move, self.rect().width()/2, 0 + self.y_move)
+
         # linie verticala
         color = QtGui.QColor(0, 0, 255)
         pen = QtGui.QPen(color, 3)
-        pen.setStyle(QtCore.Qt.DashDotLine)
+        pen.setStyle(QtCore.Qt.DashLine)
         painter.setPen(pen)
-        painter.drawLine(self.rect().width() / 2 + self.x_move, 0, self.rect().width() / 2 + self.x_move, self.rect().height())
-        
+        painter.drawLine(0 + self.x_move, -self.rect().height(), 0 + self.x_move, self.rect().height())
+
 
     def update_image(self, image):
         self.scene.update()
@@ -131,7 +132,7 @@ class PyuEyeQtView(QtGui.QWidget):
     def keyReleaseEvent(self, e):
         if e.key() == QtCore.Qt.Key_Right:
             self.x_move += 10
-            print(self.x_move)
+            #print(self.x_move)
         if e.key() == QtCore.Qt.Key_Left:
             self.x_move -= 10
             #print(self.x_move)

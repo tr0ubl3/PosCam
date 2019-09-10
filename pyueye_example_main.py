@@ -43,7 +43,7 @@ import cv2
 def process_image(self, image_data):
 
     # reshape the image data as 1dimensional array
-    #image = image_data.as_1d_image()
+    image = image_data.as_1d_image()
     # make a gray image
     #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     #image = cv2.medianBlur(image,5)
@@ -62,8 +62,8 @@ def process_image(self, image_data):
           # corresponding to the center of the circle
     #     cv2.circle(image, (x, y), r, (0, 255, 0), 6)
 
-    image = cv2.cvtColor(image_data, cv2.COLOR_BGR2GRAY)
-    
+    #image = cv2.cvtColor(image_data, cv2.COLOR_BGR2GRAY)
+
     # show the image with Qt
     return QtGui.QImage(image.data,
                         image_data.mem_info.width,
@@ -77,8 +77,8 @@ def main():
 
     # a basic qt window
     view = PyuEyeQtView()
-    #view.showFullScreen()
-    view.show()
+    view.showFullScreen()
+    #view.show()
 
     # camera class to simplify uEye API access
     cam = Camera()
@@ -87,15 +87,15 @@ def main():
     cam.set_aoi(0, 0, 752, 480)
     cam.alloc()
     cam_image = cam.capture_video()
-    
-    view.user_callback = cam_image
+
+    view.user_callback = process_image
 
     # a thread that waits for new images and processes all connected views
-    #thread = FrameThread(cam)
-    #thread.start()
+    thread = FrameThread(cam, view)
+    thread.start()
 
     # cleanup
-    app.exit_connect()
+    app.exit_connect(thread.stop)
     app.exec_()
 
     #thread.stop()
