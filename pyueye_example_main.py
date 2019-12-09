@@ -84,6 +84,8 @@ def main():
     cam = Camera()
     cam.init()
     cam.set_colormode(ueye.IS_CM_BGR8_PACKED)
+
+    #cam.set_colormode(ueye.IS_CM_SENSOR_RAW8)
     cam.set_aoi(0, 0, 752, 480)
     cam.alloc()
     cam_image = cam.capture_video()
@@ -98,8 +100,8 @@ def main():
     app.exit_connect(thread.stop)
     app.exec_()
 
-    #thread.stop()
-    #thread.join()
+    thread.stop()
+    thread.join()
 
     cam.stop_video()
     cam.exit()

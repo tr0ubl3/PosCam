@@ -100,7 +100,6 @@ class MemoryInfo:
                                       self.img_buff.mem_ptr,
                                       self.img_buff.mem_id, self.x, self.y, self.bits, self.pitch))
 
-
 class ImageData:
     def __init__(self, h_cam, img_buff):
         self.h_cam = h_cam
@@ -122,7 +121,6 @@ class ImageData:
             return numpy.reshape(self.array, (self.mem_info.height, self.mem_info.width, channels))
         else:
             return numpy.reshape(self.array, (self.mem_info.height, self.mem_info.width))
-
 
     def unlock(self):
         check(ueye.is_UnlockSeqBuf(self.h_cam, self.img_buff.mem_id, self.img_buff.mem_ptr))

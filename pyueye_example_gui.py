@@ -39,6 +39,8 @@ from PyQt4 import QtGui
 from pyueye import ueye
 #from PyQt4.QtGui import QPixmap
 
+import math
+
 
 def get_qt_format(ueye_color_format):
     return { ueye.IS_CM_SENSOR_RAW8: QtGui.QImage.Format_Mono,
@@ -63,7 +65,7 @@ class PyuEyeQtView(QtGui.QWidget):
         self.v_layout = QtGui.QVBoxLayout(self)
         self.h_layout = QtGui.QHBoxLayout()
 
-        self.scene = QtGui.QGraphicsScene()
+        self.scene = QtGui.QGraphicsScene(self.graphics_view)
         self.graphics_view.setScene(self.scene)
         self.v_layout.addWidget(self.graphics_view)
 
@@ -80,6 +82,13 @@ class PyuEyeQtView(QtGui.QWidget):
 
         self.x_move = 0
         self.y_move = 0
+        self.x_move_1 = 0
+        self.y_move_2 = 0
+        self.x_spacer = 250
+        self.x_min = 10
+        self.electrod = 100 #in microni
+        self.x_calibration = 100
+        self.increment = 1800.0
 
     def on_update_canny_1_slider(self, value):
         pass # print(value)
@@ -101,13 +110,31 @@ class PyuEyeQtView(QtGui.QWidget):
         #print(self.rect().height() / 2 + self.y_move)
         painter.drawLine(-self.rect().width(), 0 + self.y_move, self.rect().width()/2, 0 + self.y_move)
 
-        # linie verticala
+        # linie verticala stanga
         color = QtGui.QColor(0, 0, 255)
         pen = QtGui.QPen(color, 3)
         pen.setStyle(QtCore.Qt.DashLine)
         painter.setPen(pen)
-        painter.drawLine(0 + self.x_move, -self.rect().height(), 0 + self.x_move, self.rect().height())
+        painter.drawLine(self.x_move - self.x_spacer, -self.rect().height(), self.x_move - self.x_spacer, self.rect().height())
 
+        # linie verticala dreapta
+        color = QtGui.QColor(0, 0, 255)
+        pen = QtGui.QPen(color, 3)
+        pen.setStyle(QtCore.Qt.DashLine)
+        painter.setPen(pen)
+        painter.drawLine(self.x_move_1 + self.x_spacer, -self.rect().height() / 2, self.x_move_1 + self.x_spacer, self.rect().height())
+
+        # afisare distanta intre liniile verticale
+        painter.setPen(QtGui.QColor(125, 125, 125))
+        painter.setFont(QtGui.QFont('Consolas', 30))
+        val_afisata = (self.electrod * (self.x_move_1 - self.x_move + 2 * self.x_spacer)) / self.x_calibration #(self.rect().width() / 2 + self.x_move_1 + self.x_spacer) - (self.rect().width() / 2 + self.x_move - self.x_spacer)
+        #print(lol)
+        painter.drawText((-self.rect().width() / 2) + 30 , (-self.rect().height() / 2) + 50, u'\u00D8' + ' ' + str(val_afisata) + ' ' + u'\u03BCm')
+
+        # afisare calcul unghi
+        unghi_teta = math.degrees(math.atan(self.increment/(val_afisata / 2)))
+        inclinatie = 1000 / math.tan(math.radians(unghi_teta))
+        painter.drawText((-self.rect().width() / 2) + 30, (-self.rect().height() / 2) + 100, str(round(inclinatie, 2)) + ' ' + u'\u03BCm' + '/mm')
 
     def update_image(self, image):
         self.scene.update()
@@ -130,19 +157,55 @@ class PyuEyeQtView(QtGui.QWidget):
         self.processors.append(callback)
 
     def keyReleaseEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Right:
+        k = e.key()
+        m = int(e.modifiers())
+
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Right'):
             self.x_move += 10
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Right):
+            self.x_move += 1
             #print(self.x_move)
-        if e.key() == QtCore.Qt.Key_Left:
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Left'):
             self.x_move -= 10
             #print(self.x_move)
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Left):
+            self.x_move -= 1
         if e.key() == QtCore.Qt.Key_Up:
             self.y_move -= 10
             #print(self.y_move)
         if e.key() == QtCore.Qt.Key_Down:
             self.y_move += 10
             #print(self.y_move)
-        self.update()
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Ctrl+Right'):
+            self.x_move_1 += 10
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Right):
+            self.x_move_1 += 1
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Ctrl+Left'):
+            self.x_move_1 -= 10
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Left):
+            self.x_move_1 -= 1
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Ctrl+N'):
+            self.x_move = 0
+            self.y_move = 0
+            self.x_move_1 = 0
+            self.y_move_2 = 0
+            self.x_calibration = 100
+        if e.key() == QtCore.Qt.Key_C:
+            self.showDialogCalibration()
+        if e.key() == QtCore.Qt.Key_I:
+            self.showDialogIncrement()
+        self.scene.update()
+
+    def showDialogCalibration(self):
+        text, result = QtGui.QInputDialog.getText(self, 'Calibrare camera ', 'Introdu diametrul electrodului:')
+        if result == True:
+            self.electrod = int(text)
+            self.x_calibration = self.x_move_1 - self.x_move + 2 * self.x_spacer
+
+    def showDialogIncrement(self):
+        text, result = QtGui.QInputDialog.getText(self, 'Increment ', 'Introdu incrementul in mm:')
+        if result == True:
+            self.increment = float(text) * 1000
 
 class PyuEyeQtApp:
     def __init__(self, args=[]):

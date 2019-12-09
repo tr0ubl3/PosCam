@@ -40,29 +40,29 @@ class Window(QtGui.QMainWindow):
         pen.setStyle(QtCore.Qt.DashLine)
         painter.setPen(pen)
         painter.drawLine(self.rect().width() / 2 + self.x_move - self.x_spacer, 0, self.rect().width() / 2 + self.x_move - self.x_spacer, self.rect().height())
-        
+
         # linie verticala dreapta
         color = QtGui.QColor(0, 0, 255)
         pen = QtGui.QPen(color, 3)
         pen.setStyle(QtCore.Qt.DashLine)
         painter.setPen(pen)
         painter.drawLine(self.rect().width() / 2 + self.x_move_1 + self.x_spacer, 0, self.rect().width() / 2 + self.x_move_1 + self.x_spacer, self.rect().height())
-        
+
         # afisare distanta intre liniile verticale
         painter.setPen(QtGui.QColor(125, 125, 125))
         painter.setFont(QtGui.QFont('Consolas', 30))
         val_afisata = (self.electrod * (self.x_move_1 - self.x_move + 2 * self.x_spacer)) / self.x_calibration #(self.rect().width() / 2 + self.x_move_1 + self.x_spacer) - (self.rect().width() / 2 + self.x_move - self.x_spacer)
         #print(lol)
         painter.drawText(50, 100, u'\u00D8' + ' ' + str(val_afisata) + ' ' + u'\u03BCm')
-        
+
         # afisare calcul unghi
-        unghi_teta = math.degrees(math.atan(self.increment/val_afisata))
+        unghi_teta = math.degrees(math.atan(self.increment/(val_afisata / 2)))
         painter.drawText(50, 150, u'\u2221' + ' ' + str(round(90 - unghi_teta, 2)) + u'\u00B0' + ', increment de ' + str(self.increment/1000) + ' mm')
-        
+
     def keyPressEvent(self, e):
         k = e.key()
         m = int(e.modifiers())
-        
+
         if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Right'):
             self.x_move += 10
         if QtGui.QKeySequence(m + k) == QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Right):
@@ -98,13 +98,13 @@ class Window(QtGui.QMainWindow):
         if e.key() == QtCore.Qt.Key_I:
             self.showDialogIncrement()
         self.update()
-    
+
     def showDialogCalibration(self):
         text, result = QtGui.QInputDialog.getText(self, 'Calibrare camera ', 'Introdu diametrul electrodului:')
         if result == True:
             self.electrod = int(text)
             self.x_calibration = self.x_move_1 - self.x_move + 2 * self.x_spacer
-            
+
     def showDialogIncrement(self):
         text, result = QtGui.QInputDialog.getText(self, 'Increment ', 'Introdu incrementul in mm:')
         if result == True:
