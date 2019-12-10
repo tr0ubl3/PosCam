@@ -141,7 +141,7 @@ class PyuEyeQtView(QtGui.QWidget):
             inclinatie = (1000 / math.tan(math.radians(unghi_teta)))
         # print(((1000 * self.x_calibration)/self.electrod))
 
-        painter.drawText((-self.rect().width() / 2) + 30, (-self.rect().height() / 2) + 100, str(unghi_teta) + ' ' + str(round(inclinatie, 2)) + ' ' + u'\u03BCm' + '/mm')
+        painter.drawText((-self.rect().width() / 2) + 30, (-self.rect().height() / 2) + 100, 'Inclinatie ' + str(round(inclinatie, 2)) + ' ' + u'\u03BCm' + '/mm')
 
     def update_image(self, image):
         self.scene.update()
