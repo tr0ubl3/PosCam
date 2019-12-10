@@ -202,6 +202,8 @@ class PyuEyeQtView(QtGui.QWidget):
             self.showDialogCalibration()
         if e.key() == QtCore.Qt.Key_I:
             self.showDialogIncrement()
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Ctrl+R'):
+            os.system("reboot")
         if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Ctrl+Q'):
             os.system("shutdown now -h")
         self.scene.update()
