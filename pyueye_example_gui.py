@@ -40,6 +40,7 @@ from pyueye import ueye
 #from PyQt4.QtGui import QPixmap
 
 import math
+import os
 
 
 def get_qt_format(ueye_color_format):
@@ -201,6 +202,8 @@ class PyuEyeQtView(QtGui.QWidget):
             self.showDialogCalibration()
         if e.key() == QtCore.Qt.Key_I:
             self.showDialogIncrement()
+        if QtGui.QKeySequence(m + k) == QtGui.QKeySequence('Ctrl+Q'):
+            os.system("shutdown now -h")
         self.scene.update()
 
     def showDialogCalibration(self):
